@@ -56,9 +56,37 @@ def revert_dob_column_names(df_table):
     return df_table
 
 
+def remove_empty_elements(array, axis=0):
+    if array.ndim == 1:
+        return array[array != '']
+    elif array.ndim == 2:
+        if axis == 0:
+            return array[:, ~np.all(array == '', axis=axis)]
+        elif axis == 1:
+            return array[~np.all(array == '', axis=axis), :]
+    else:
+        raise ValueError("Input array must be 1-D or 2-D.")
+
+
 def get_cleaned_df(response, header_present, header):
     df_table = generate_df_from_response(response, header_present, header)
     # df_table = rename_dob_columns(df_table)
     # df_table = clean_dob_columns(df_table)
     # df_table = revert_dob_column_names(df_table)
     return df_table
+
+
+if __name__ == '__main__':
+    # Test with a 1-D array
+    arr_1d = np.array(["a", "b", "", "d", "e"])
+    result_1d = remove_empty_elements(arr_1d)
+    print(result_1d)  # Output: ['a' 'b' 'd' 'e']
+
+    # Test with a 2-D array
+    arr_2d = np.array([["a", "b", ""],
+                       ["d", "e", ""]])
+    result_2d = remove_empty_elements(arr_2d, axis=0)
+    print(result_2d)
+    # Output:
+    # [['a' 'b']
+    #  ['d' 'e']]
