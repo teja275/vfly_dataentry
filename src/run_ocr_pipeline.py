@@ -1,6 +1,6 @@
-from data.make_df import generate_df_from_response
-from data.make_images import split_image_to_chunks
-from models.ocr_predict import get_ocr_response
+from src.data.make_df import generate_df_from_response
+from src.data.make_images import split_image_to_chunks
+from src.models.ocr_predict import get_ocr_response
 from PIL import Image
 
 import os
@@ -13,7 +13,6 @@ def get_excel_from_image(
     num_chunks,
     num_records,
     ocr_url,
-    output_folder,
     hpatch_size=1,
     vpatch_size=1,
 ):
@@ -21,9 +20,10 @@ def get_excel_from_image(
     image_chunks = split_image_to_chunks(
         image, num_chunks, num_records, hpatch_size, vpatch_size
     )
-    zip_filename = os.path.join(output_folder, "output.zip")
+    # zip_buffer = os.path.join(output_folder, "output.zip")
+    zip_buffer = io.BytesIO()
 
-    with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for chunk_count, image_chunk in enumerate(image_chunks):
             print(f"Processing chunk {chunk_count + 1} for {input_image_file}")
             response = get_ocr_response(ocr_url, image_chunk)
@@ -42,17 +42,14 @@ def get_excel_from_image(
 
             # Add the image data to the zip file
             zipf.writestr(f"image_chunk_{chunk_count + 1}.png", image_data.getvalue())
-
-    return zip_filename
+    zip_buffer.seek(0)
+    return zip_buffer
 
 
 if __name__ == "__main__":
-    image = "/Users/bhanuteja/Downloads/work_demo.gif"
-    num_chunks = 1
-    num_records = 56
+    image_file = "/Users/aryan/Downloads/work_demo.gif"
+    num_chunks = 20
+    num_records = 50
     ocr_url = "https://app.nanonets.com/api/v2/OCR/Model/25dda2f2-e3cc-4d91-96aa-ee401d370ca8/LabelFile/?async=false"
-    output_folder = "/Users/bhanuteja/Downloads"
-    add_patch = True
-    get_excel_from_image(
-        image, num_chunks, num_records, add_patch, ocr_url, output_folder
-    )
+    output_folder = "/Users/aryan/Downloads"
+    get_excel_from_image(image_file, num_chunks, num_records, ocr_url, output_folder)

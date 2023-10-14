@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Processing App</title>
+</head>
+<body>
+    <h1>Image Processing App</h1>
+
+    <form method="POST" action="/" enctype="multipart/form-data">
+        <div>
+            <label for="image">Upload an Image:</label>
+            <input type="file" name="image" id="image" required>
+        </div>
+        <div>
+            <label for="num_chunks">Number of Chunks:</label>
+            <input type="number" name="num_chunks" id="num_chunks" required>
+        </div>
+        <div>
+            <label for="num_records">Number of Records:</label>
+            <input type="number" name="num_records" id="num_records" required>
+        </div>
+        <div>
+            <input type="submit" value="Process and Download">
+        </div>
+    </form>
+</body>
+</html>
