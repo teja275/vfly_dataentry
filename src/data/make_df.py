@@ -2,25 +2,28 @@ import pandas as pd
 import numpy as np
 
 
-def generate_df_from_response(response, header_present=False, header=None):
+def generate_df_from_response(response, header_present=False, header=[]):
     if response.status_code == 200:
         response = response.json()
         # Extract the table data from the response
-        table_data = response["result"][0]["prediction"][0]["cells"]
+        data = response["result"][0]["prediction"][0]["cells"]
         # Determine the number of rows and columns
-        num_rows = max(cell["row"] for cell in table_data)
-        num_cols = max(cell["col"] for cell in table_data)
+        num_rows = max(cell["row"] for cell in data)
+        num_cols = max(cell["col"] for cell in data)
         # Appending data to a numpy array
-        data = [cell["text"] for cell in table_data]
-        data_array = np.array(data)
+        table_data = [cell["text"] for cell in data]
+        table_data = np.array(table_data)
         # Reshaping the numpy array
-        data_array = data_array.reshape(num_rows, num_cols)
+        table_data = table_data.reshape(num_rows, num_cols)
         if header_present:
-            # Converting the numpy array to dataframe
-            df_table = pd.DataFrame(data_array[1:], columns=data_array[0], dtype=str)
+            df_table = pd.DataFrame(table_data[1:], columns=table_data[0], dtype=str)
         else:
+            header = remove_empty_elements(header)
+            table_data = remove_empty_elements(table_data)
             # Converting the numpy array to dataframe
-            df_table = pd.DataFrame(data_array, columns=header, dtype=str)
+            if table_data.shape[1] > len(header):
+                header = np.append(header, (table_data.shape[1]-len(header)))
+            df_table = pd.DataFrame(table_data, columns=header, dtype=str)
         return df_table
     else:
         print("HTTP request failed with status code:", response.status_code)
