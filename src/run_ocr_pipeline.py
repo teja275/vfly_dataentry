@@ -9,10 +9,18 @@ import io
 
 
 def get_excel_from_image(
-    input_image_file, num_chunks, num_records, add_patch, ocr_url, output_folder
+    input_image_file,
+    num_chunks,
+    num_records,
+    ocr_url,
+    output_folder,
+    hpatch_size=1,
+    vpatch_size=1,
 ):
     image = Image.open(input_image_file)
-    image_chunks = split_image_to_chunks(image, num_chunks, num_records, add_patch)
+    image_chunks = split_image_to_chunks(
+        image, num_chunks, num_records, hpatch_size, vpatch_size
+    )
     zip_filename = os.path.join(output_folder, "output.zip")
 
     with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zipf:
