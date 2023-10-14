@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def generate_df_from_response(response, header_present=False, header=[]):
+def generate_df_from_response(response, header_present=False, header=None):
     if response.status_code == 200:
         response = response.json()
         # Extract the table data from the response
@@ -20,9 +20,13 @@ def generate_df_from_response(response, header_present=False, header=[]):
         else:
             header = remove_empty_elements(header)
             table_data = remove_empty_elements(table_data)
+            columns_to_add = abs(table_data.shape[1] - len(header))
             # Converting the numpy array to dataframe
             if table_data.shape[1] > len(header):
-                header = np.append(header, (table_data.shape[1]-len(header)))
+                header = np.append(header, np.array([''] * columns_to_add))
+            elif table_data.shape[1] < len(header):
+                empty_array = np.empty((table_data.shape[0], columns_to_add))
+                table_data = np.hstack((table_data, empty_array))
             df_table = pd.DataFrame(table_data, columns=header, dtype=str)
         return df_table
     else:
