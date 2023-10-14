@@ -1,4 +1,4 @@
-from data.make_df import get_cleaned_df
+from data.make_df import generate_df_from_response
 from data.make_images import split_image_to_chunks
 from models.ocr_predict import get_ocr_response
 from PIL import Image
@@ -20,10 +20,9 @@ def get_excel_from_image(
             print(f"Processing chunk {chunk_count + 1} for {input_image_file}")
             response = get_ocr_response(ocr_url, image_chunk)
             if chunk_count == 0:
-                df_table = get_cleaned_df(response, header_present=True, header=None)
-                header = df_table.columns
+                df_table = generate_df_from_response(response, header_present=True)
             else:
-                df_table = get_cleaned_df(response, header_present=False, header=header)
+                df_table = generate_df_from_response(response, header_present=False)
             excel_data = io.BytesIO()
             df_table.to_excel(excel_data, index=False)
 
