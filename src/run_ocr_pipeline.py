@@ -1,9 +1,10 @@
 from src.data.make_df import generate_df_from_response
 from src.data.make_images import split_image_to_chunks
 from src.models.ocr_predict import get_ocr_response
+from config import OCR_API_URL
 from PIL import Image
 
-import os
+
 import zipfile
 import io
 
@@ -54,8 +55,7 @@ def get_excel_from_image(
 
 if __name__ == "__main__":
     image_file = "/Users/aryan/Downloads/work_demo.gif"
-    num_chunks = 20
-    num_records = 50
-    ocr_url = "https://app.nanonets.com/api/v2/OCR/Model/25dda2f2-e3cc-4d91-96aa-ee401d370ca8/LabelFile/?async=false"
+    num_chunks = 1
+    num_records = 60
     output_folder = "/Users/aryan/Downloads"
-    get_excel_from_image(image_file, num_chunks, num_records, ocr_url, output_folder)
+    get_excel_from_image(image_file, num_chunks, num_records, 'demo', OCR_API_URL)
