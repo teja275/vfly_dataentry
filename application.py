@@ -12,22 +12,23 @@ application.config["UPLOAD_FOLDER"] = "uploads"
 @application.route("/", methods=["GET", "POST"])
 def upload_image():
     if request.method == "POST":
+        image = request.files["image"]
         num_chunks = int(request.form["num_chunks"])
         num_records = int(request.form["num_records"])
-        image = request.files["image"]
+        output_filename_prefix = request.form["file_prefix"]
         if image:
-            # filename = secure_filename(image.filename)
-            # image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-            # image.save(image_path)
-
             ocr_url = "https://app.nanonets.com/api/v2/OCR/Model/25dda2f2-e3cc-4d91-96aa-ee401d370ca8/LabelFile/?async=false"
             # Call your processing script here
-            zip_file = get_excel_from_image(image, num_chunks, num_records, ocr_url)
+            zip_file = get_excel_from_image(
+                image, num_chunks, num_records, output_filename_prefix, ocr_url
+            )
 
             return Response(
                 zip_file,
-                mimetype='application/zip',
-                headers={'Content-Disposition': 'attachment; filename=image_chunks.zip'}
+                mimetype="application/zip",
+                headers={
+                    "Content-Disposition": "attachment; filename=image_chunks.zip"
+                },
             )
 
     # Return the form for GET requests

@@ -12,6 +12,7 @@ def get_excel_from_image(
     input_image_file,
     num_chunks,
     num_records,
+    output_filename_prefix,
     ocr_url,
     hpatch_size=1,
     vpatch_size=1,
@@ -20,7 +21,6 @@ def get_excel_from_image(
     image_chunks = split_image_to_chunks(
         image, num_chunks, num_records, hpatch_size, vpatch_size
     )
-    # zip_buffer = os.path.join(output_folder, "output.zip")
     zip_buffer = io.BytesIO()
 
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -35,13 +35,19 @@ def get_excel_from_image(
             df_table.to_excel(excel_data, index=False)
 
             # Add the Excel data to the zip file
-            zipf.writestr(f"chunk_{chunk_count + 1}.xlsx", excel_data.getvalue())
+            zipf.writestr(
+                f"{output_filename_prefix}_chunk_{chunk_count + 1}.xlsx",
+                excel_data.getvalue(),
+            )
 
             image_data = io.BytesIO()
             image_chunk.save(image_data, format="PNG")
 
             # Add the image data to the zip file
-            zipf.writestr(f"image_chunk_{chunk_count + 1}.png", image_data.getvalue())
+            zipf.writestr(
+                f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.png",
+                image_data.getvalue(),
+            )
     zip_buffer.seek(0)
     return zip_buffer
 
