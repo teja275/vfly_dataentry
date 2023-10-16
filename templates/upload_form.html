@@ -5,23 +5,25 @@
     <title>Image to Excel Converter - Data Entry Project</title>
     <style>
         body {
-            background-image: url('data_entry.jpeg');
+            background: url('data_entry.jpeg') no-repeat center center fixed;
             background-size: cover;
-            background-repeat: no-repeat;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         h1 {
             text-align: center;
-            color: #333; /* Change this to your desired text color */
+            color: #333;
             margin-top: 50px;
+            font-size: 24px;
         }
 
         form {
             width: 300px;
             margin: 0 auto;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.7); /* Adjust opacity as needed */
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
@@ -29,24 +31,27 @@
         label {
             display: block;
             margin: 10px 0;
+            font-size: 16px;
         }
 
-        input[type="file"], input[type="number"] {
+        input[type="file"], input[type="number"], input[type="text"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 14px;
         }
 
         input[type="submit"] {
             width: 100%;
             padding: 10px;
-            background: #007bff; /* Button background color */
-            color: #fff; /* Button text color */
+            background: #007bff;
+            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -54,7 +59,7 @@
     <h1>Image to Excel Converter - Data Entry Project</h1>
 
     <form method="POST" action="/" enctype="multipart/form-data">
-        <label for="image">Upload the Image</label>
+        <label for="image">Upload the Image:</label>
         <input type="file" name="image" id="image" required>
 
         <label for="num_chunks">Number of Chunks:</label>
@@ -63,9 +68,8 @@
         <label for="num_records">Number of Records:</label>
         <input type="number" name="num_records" id="num_records" required>
 
-        <label for="file_prefix">Output file name prefix</label>
+        <label for="file_prefix">Output file name prefix:</label>
         <input type="text" name="file_prefix" id="file_prefix" required>
-
 
         <input type="submit" value="Process and Download">
     </form>
