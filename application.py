@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, Response
 from config import OCR_API_URL
 from src.run_ocr_pipeline import get_excel_from_image
 
-application = Flask(__name__, template_folder="templates")
+application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
 
 
