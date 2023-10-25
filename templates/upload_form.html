@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Image to Excel Converter - Data Entry Project</title>
@@ -40,7 +40,8 @@
 
         input[type="file"],
         input[type="number"],
-        input[type="text"] {
+        input[type="text"],
+        select {
             width: 50%; /* Set a consistent width for inputs */
             padding: 10px;
             margin: 5px 0;
@@ -59,25 +60,51 @@
             cursor: pointer;
             font-size: 16px;
         }
+
+        /* Add a CSS class to clear the float for the "Processing Option" label */
+        .form-field label[for="processing_option"] {
+            clear: both;
+        }
     </style>
 </head>
 <body>
-    <h1>Image to Excel Converter - Data Entry Project</h1>
+<h1>Image to Excel Converter - Data Entry Project</h1>
 
-    <form method="POST" action="/" enctype="multipart/form-data">
-        <label for="image">Upload the Image:</label>
+<form method="POST" action="/" enctype="multipart/form-data">
+    <!-- Field 1: Image -->
+    <div class="form-field">
+        <label for="image">Image:</label>
         <input type="file" name="image" id="image" required>
+    </div>
 
+    <!-- Field 2: Number of Chunks -->
+    <div class="form-field">
         <label for="num_chunks">Number of Chunks:</label>
         <input type="number" name="num_chunks" id="num_chunks" required>
+    </div>
 
+    <!-- Field 3: Number of Records -->
+    <div class="form-field">
         <label for="num_records">Number of Records:</label>
         <input type="number" name="num_records" id="num_records" required>
+    </div>
 
+    <!-- Field 4: Processing Option -->
+    <div class="form-field" style="display: grid">
+        <label for="processing_option">Processing Option:</label>
+        <select name="processing_option" id="processing_option">
+            <option value="Image Chunking Only">Image Chunking Only</option>
+            <option value="Image Chunking & OCR">Image Chunking & OCR</option>
+        </select>
+    </div>
+
+    <!-- Field 5: Output file name prefix -->
+    <div class="form-field">
         <label for="file_prefix">Output file name prefix:</label>
         <input type="text" name="file_prefix" id="file_prefix" required>
-
-        <input type="submit" value="Process and Download">
-    </form>
+    </div>
+<br>
+    <input type="submit" value="Process and Download">
+</form>
 </body>
 </html>

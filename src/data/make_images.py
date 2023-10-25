@@ -1,4 +1,6 @@
 from PIL import Image
+import io
+import zipfile
 
 
 def split_image_to_chunks(
@@ -27,6 +29,33 @@ def split_image_to_chunks(
         patched_image.paste(cropped_image, (vpatch_width, hpatch_height))
         image_chunks.append(patched_image)
     return image_chunks
+
+
+def download_image_chunks(
+    input_image_file,
+    num_chunks,
+    num_records,
+    output_filename_prefix,
+    hpatch_size=1,
+    vpatch_size=1,
+):
+    image = Image.open(input_image_file)
+    image_chunks = split_image_to_chunks(
+        image, num_chunks, num_records, hpatch_size, vpatch_size
+    )
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for chunk_count, image_chunk in enumerate(image_chunks):
+            image_data = io.BytesIO()
+            image_chunk.save(image_data, format="PNG")
+
+            # Add the image data to the zip file
+            zipf.writestr(
+                f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.png",
+                image_data.getvalue(),
+            )
+    zip_buffer.seek(0)
+    return zip_buffer
 
 
 if __name__ == "__main__":

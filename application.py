@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, Response
 from config import OCR_API_URL
 from src.run_ocr_pipeline import get_excel_from_image
+from src.data.make_images import download_image_chunks
 
 application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
@@ -15,21 +16,35 @@ def upload_image():
         num_chunks = int(request.form["num_chunks"])
         num_records = int(request.form["num_records"])
         output_filename_prefix = request.form["file_prefix"]
+        processing_option = request.form.get("processing_option")
         if image:
-            # Call your processing script here
-            zip_file = get_excel_from_image(
-                image, num_chunks, num_records, output_filename_prefix, OCR_API_URL
-            )
-            return Response(
-                zip_file,
-                mimetype="application/zip",
-                headers={
-                    "Content-Disposition": "attachment; filename=image_chunks.zip"
-                },
-            )
+            if processing_option == "Image Chunking & OCR":
+                # Call your processing script here
+                zip_file = get_excel_from_image(
+                    image, num_chunks, num_records, output_filename_prefix, OCR_API_URL
+                )
+                return Response(
+                    zip_file,
+                    mimetype="application/zip",
+                    headers={
+                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_image_and_excel_chunks.zip"
+                    },
+                )
+            elif processing_option == "Image Chunking Only":
+                zip_file = download_image_chunks(
+                    image, num_chunks, num_records, output_filename_prefix
+                )
+                return Response(
+                    zip_file,
+                    mimetype="application/zip",
+                    headers={
+                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_image_chunks.zip"
+                    },
+                )
+
     # Return the form for GET requests
     return render_template("upload_form.html")
 
 
 if __name__ == "__main__":
-    application.run()
+    application.run(debug=True)
