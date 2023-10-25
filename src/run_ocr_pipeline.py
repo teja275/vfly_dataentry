@@ -27,7 +27,7 @@ def get_excel_from_image(
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for chunk_count, image_chunk in enumerate(image_chunks):
             print(f"Processing chunk {chunk_count + 1} for {input_image_file}")
-            response = get_ocr_response(ocr_url, image_chunk)
+            response = get_ocr_response(ocr_url, image_chunk, f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.jpg")
             if chunk_count == 0:
                 df_table = generate_df_from_response(response, header_present=True)
             else:
