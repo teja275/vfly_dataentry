@@ -10,7 +10,7 @@ application.config["UPLOAD_FOLDER"] = "uploads"
 
 
 # Define your route for the upload form
-@application.route('/update_server', methods=['POST'])
+@application.route('/update_server', methods=['POST'], user_name='somayajulua', password='s2saisarovar')
 def webhook():
     if request.method == 'POST':
         try:
