@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, Response
 from config import OCR_API_URL
 from src.run_ocr_pipeline import get_excel_from_image
 from src.data.make_images import download_image_chunks
-import git
+import subprocess
 
 application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
@@ -13,14 +13,11 @@ application.config["UPLOAD_FOLDER"] = "uploads"
 @application.route('/update_server', methods=['POST'])
 def webhook():
     if request.method == 'POST':
-        repo_path = '/home/arya2705/vfly_dataentry'  # Change this to the actual path of your local repository
         try:
-            repo = git.Repo(repo_path)
-            origin = repo.remotes.origin
-            origin.pull(auth_config={"username": "teja275", "password": "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"})
-            return 'Updated PythonAnywhere successfully', 200
+            subprocess.call(['/bin/bash', '/home/arya2705/vfly_dataentry/pull.sh'])
+            return "Pull successful"
         except Exception as e:
-            return f'Error: {str(e)}', 500
+            return f"Pull failed: {str(e)}"
     else:
         return 'Wrong event type', 400
 
