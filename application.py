@@ -17,13 +17,7 @@ def webhook():
         try:
             repo = git.Repo(repo_path)
             origin = repo.remotes.origin
-
-            # Configure the Git remote URL with your personal access token
-            token = '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'
-            origin_url = f'https://{token}@github.com/teja275/vfly_dataentry.git'
-
-            origin.config_writer.set("url", origin_url)
-            origin.pull('develop')
+            origin.pull()
             return 'Updated PythonAnywhere successfully', 200
         except Exception as e:
             return f'Error: {str(e)}', 500
