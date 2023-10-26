@@ -17,7 +17,7 @@ def webhook():
         try:
             repo = git.Repo(repo_path)
             origin = repo.remotes.origin
-            origin.pull(auth_config={"username": "teja275", "password": "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"}"})
+            origin.pull(auth_config={"username": "teja275", "password": "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"})
             return 'Updated PythonAnywhere successfully', 200
         except Exception as e:
             return f'Error: {str(e)}', 500
