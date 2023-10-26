@@ -1,6 +1,7 @@
-from PIL import Image
 import io
 import zipfile
+
+from PIL import Image
 
 
 def split_image_to_chunks(
@@ -18,8 +19,6 @@ def split_image_to_chunks(
         right = width
         upper = i * chunk_height
         lower = (i + 1) * chunk_height
-        # if i > 0:
-        #     upper = upper - hpatch_height
         cropped_image = input_image.crop((left, upper, right, lower))
         patched_image = Image.new(
             "RGB",

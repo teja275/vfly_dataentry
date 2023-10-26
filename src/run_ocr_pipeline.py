@@ -1,12 +1,12 @@
+import io
+import zipfile
+
+from PIL import Image
+
+from config import OCR_API_URL
 from src.data.make_df import generate_df_from_response
 from src.data.make_images import split_image_to_chunks
 from src.models.ocr_predict import get_ocr_response
-from config import OCR_API_URL
-from PIL import Image
-
-
-import zipfile
-import io
 
 
 def get_excel_from_image(

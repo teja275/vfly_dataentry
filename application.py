@@ -1,25 +1,27 @@
 # application.py
-from flask import Flask, render_template, request, Response
-from config import OCR_API_URL
-from src.run_ocr_pipeline import get_excel_from_image
-from src.data.make_images import download_image_chunks
 import subprocess
+
+from flask import Flask, render_template, request, Response
+
+from config import OCR_API_URL
+from src.data.make_images import download_image_chunks
+from src.run_ocr_pipeline import get_excel_from_image
 
 application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
 
 
 # Define your route for the upload form
-@application.route('/update_server', methods=['POST'])
+@application.route("/update_server", methods=["POST"])
 def webhook():
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
-            subprocess.call(['/bin/bash', '/home/arya2705/vfly_dataentry/pull.sh'])
+            subprocess.call(["/bin/bash", "/home/arya2705/vfly_dataentry/pull.sh"])
             return "Pull successful"
         except Exception as e:
             return f"Pull failed: {str(e)}"
     else:
-        return 'Wrong event type', 400
+        return "Wrong event type", 400
 
 
 @application.route("/", methods=["GET", "POST"])
