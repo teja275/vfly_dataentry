@@ -3,12 +3,34 @@ from flask import Flask, render_template, request, Response
 from config import OCR_API_URL
 from src.run_ocr_pipeline import get_excel_from_image
 from src.data.make_images import download_image_chunks
+import git
 
 application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
 
 
 # Define your route for the upload form
+@application.route('/update_server', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo_path = '/home/arya2705/vfly_dataentry'  # Change this to the actual path of your local repository
+        try:
+            repo = git.Repo(repo_path)
+            origin = repo.remotes.origin
+
+            # Configure the Git remote URL with your personal access token
+            token = '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'
+            origin_url = f'https://{token}@github.com/teja275/vfly_dataentry.git'
+
+            origin.config_writer.set("url", origin_url)
+            origin.pull('develop')
+            return 'Updated PythonAnywhere successfully', 200
+        except Exception as e:
+            return f'Error: {str(e)}', 500
+    else:
+        return 'Wrong event type', 400
+
+
 @application.route("/", methods=["GET", "POST"])
 def upload_image():
     if request.method == "POST":
