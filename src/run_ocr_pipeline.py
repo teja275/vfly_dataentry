@@ -3,7 +3,7 @@ import zipfile
 
 from PIL import Image
 
-from config import OCR_API_URL
+from config import OCR_API_URL, OCR_API_KEY
 from src.data.make_df import generate_df_from_response
 from src.data.make_images import split_image_to_chunks
 from src.models.ocr_predict import get_ocr_response
@@ -14,7 +14,8 @@ def get_excel_from_image(
     num_chunks,
     num_records,
     output_filename_prefix,
-    ocr_url,
+    ocr_api_url,
+    ocr_api_key,
     hpatch_size=1,
     vpatch_size=1,
 ):
@@ -28,7 +29,8 @@ def get_excel_from_image(
         for chunk_count, image_chunk in enumerate(image_chunks):
             print(f"Processing chunk {chunk_count + 1} for {input_image_file}")
             response = get_ocr_response(
-                ocr_url,
+                ocr_api_url,
+                ocr_api_key,
                 image_chunk,
                 f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.jpg",
             )
@@ -62,4 +64,6 @@ if __name__ == "__main__":
     num_chunks = 1
     num_records = 60
     output_folder = "/Users/aryan/Downloads"
-    get_excel_from_image(image_file, num_chunks, num_records, "demo", OCR_API_URL)
+    get_excel_from_image(
+        image_file, num_chunks, num_records, "demo", OCR_API_URL, OCR_API_KEY
+    )

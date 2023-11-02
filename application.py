@@ -3,7 +3,7 @@ import subprocess
 
 from flask import Flask, render_template, request, Response
 
-from config import OCR_API_URL
+from config import OCR_API_URL, OCR_API_KEY
 from src.data.make_images import download_image_chunks
 from src.run_ocr_pipeline import get_excel_from_image
 
@@ -36,7 +36,12 @@ def upload_image():
             if processing_option == "Image Chunking & OCR":
                 # Call your processing script here
                 zip_file = get_excel_from_image(
-                    image, num_chunks, num_records, output_filename_prefix, OCR_API_URL
+                    image,
+                    num_chunks,
+                    num_records,
+                    output_filename_prefix,
+                    OCR_API_URL,
+                    OCR_API_KEY,
                 )
                 return Response(
                     zip_file,
