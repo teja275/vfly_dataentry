@@ -47,14 +47,14 @@ def get_excel_from_image(
                 excel_data.getvalue(),
             )
 
-            image_data = io.BytesIO()
-            image_chunk.save(image_data, format="PNG")
-
-            # Add the image data to the zip file
-            zipf.writestr(
-                f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.png",
-                image_data.getvalue(),
-            )
+            # image_data = io.BytesIO()
+            # image_chunk.save(image_data, format="PNG")
+            #
+            # # Add the image data to the zip file
+            # zipf.writestr(
+            #     f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.png",
+            #     image_data.getvalue(),
+            # )
     zip_buffer.seek(0)
     return zip_buffer
 
