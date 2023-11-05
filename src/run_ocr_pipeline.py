@@ -1,5 +1,9 @@
 import io
 import zipfile
+from concurrent.futures import (
+    as_completed,
+    ThreadPoolExecutor,
+)  # Import ThreadPoolExecutor
 
 from PIL import Image
 
@@ -7,6 +11,25 @@ from config import OCR_API_URL, OCR_API_KEY
 from src.data.make_df import generate_df_from_response
 from src.data.make_images import split_image_to_chunks
 from src.models.ocr_predict import get_ocr_response
+
+
+def process_chunk(
+    chunk_count, image_chunk, output_filename_prefix, ocr_api_url, ocr_api_key
+):
+    print(f"Processing chunk {chunk_count + 1}")
+    response = get_ocr_response(
+        ocr_api_url,
+        ocr_api_key,
+        image_chunk,
+        f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.jpg",
+    )
+    if chunk_count == 0:
+        df_table = generate_df_from_response(response, header_present=True)
+    else:
+        df_table = generate_df_from_response(response, header_present=False)
+    excel_data = io.BytesIO()
+    df_table.to_excel(excel_data, index=False)
+    return (chunk_count, excel_data)
 
 
 def get_excel_from_image(
@@ -26,35 +49,24 @@ def get_excel_from_image(
     zip_buffer = io.BytesIO()
 
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-        for chunk_count, image_chunk in enumerate(image_chunks):
-            print(f"Processing chunk {chunk_count + 1} for {input_image_file}")
-            response = get_ocr_response(
-                ocr_api_url,
-                ocr_api_key,
-                image_chunk,
-                f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.jpg",
-            )
-            if chunk_count == 0:
-                df_table = generate_df_from_response(response, header_present=True)
-            else:
-                df_table = generate_df_from_response(response, header_present=False)
-            excel_data = io.BytesIO()
-            df_table.to_excel(excel_data, index=False)
-
-            # Add the Excel data to the zip file
-            zipf.writestr(
-                f"{output_filename_prefix}_chunk_{chunk_count + 1}.xlsx",
-                excel_data.getvalue(),
-            )
-
-            # image_data = io.BytesIO()
-            # image_chunk.save(image_data, format="PNG")
-            #
-            # # Add the image data to the zip file
-            # zipf.writestr(
-            #     f"{output_filename_prefix}_image_chunk_{chunk_count + 1}.png",
-            #     image_data.getvalue(),
-            # )
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(
+                    process_chunk,
+                    i,
+                    chunk,
+                    output_filename_prefix,
+                    ocr_api_url,
+                    ocr_api_key,
+                )
+                for i, chunk in enumerate(image_chunks)
+            ]
+            for future in as_completed(futures):
+                chunk_count, excel_data = future.result()
+                zipf.writestr(
+                    f"{output_filename_prefix}_chunk_{chunk_count + 1}.xlsx",
+                    excel_data.getvalue(),
+                )
     zip_buffer.seek(0)
     return zip_buffer
 
