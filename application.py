@@ -47,7 +47,7 @@ def upload_image():
                     zip_file,
                     mimetype="application/zip",
                     headers={
-                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_image_and_excel_chunks.zip"
+                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_excel_chunks.zip"
                     },
                 )
             elif processing_option == "Image Chunking Only":
