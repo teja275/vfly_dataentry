@@ -3,10 +3,10 @@ def clean_states(df_table, state_replacements_all=None, state_replacements_col=N
         state_replacements_all = {"N / A": "N/A", "DK": "OK", "DH": "OH"}
     if state_replacements_col is None:
         state_replacements_col = {"L": "IL", "I": "IL", "W": "WI"}
-    df_table = df_table.replace(state_replacements_all, value=True)
+    df_table = df_table.replace(state_replacements_all)
     if df_table.shape[1] == 23:
         state_columns = [7, 14, 19]
-        df_table.iloc[:, state_columns] = df_table.iloc[:, state_columns].replace(state_replacements_col, value=True)
+        df_table.iloc[:, state_columns] = df_table.iloc[:, state_columns].replace(state_replacements_col)
     return df_table
 
 
@@ -15,7 +15,7 @@ def clean_address(df_table, address_replacements=None):
         address_replacements = {" .": "."}
     if df_table.shape[1] == 23:
         address_columns = [3, 12, 18]
-        df_table.iloc[:, address_columns] = df_table.iloc[:, address_columns].replace(address_replacements, value=True)
+        df_table.iloc[:, address_columns] = df_table.iloc[:, address_columns].replace(address_replacements)
     return df_table
 
 
