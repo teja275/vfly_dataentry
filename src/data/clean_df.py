@@ -2,7 +2,7 @@ def clean_states(df_table, state_replacements_all=None, state_replacements_col=N
     if state_replacements_all is None:
         state_replacements_all = {"N / A": "N/A", "DK": "OK", "DH": "OH"}
     if state_replacements_col is None:
-        state_replacements_col = {"L": "IL", "I": "IL", "W": "WI"}
+        state_replacements_col = {"L": "IL", "I": "IL", "1": "IL", "W": "WI", "A": "FL"}
     df_table = df_table.replace(state_replacements_all)
     if df_table.shape[1] == 23:
         state_columns = [7, 14, 19]
