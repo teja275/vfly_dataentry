@@ -9,6 +9,7 @@ from PIL import Image
 
 from config import OCR_API_URL, OCR_API_KEY
 from src.data.make_df import generate_df_from_response
+from src.data.clean_df import clean_df
 from src.data.make_images import split_image_to_chunks
 from src.models.ocr_predict import get_ocr_response
 
@@ -27,6 +28,7 @@ def process_chunk(
         df_table = generate_df_from_response(response, header_present=True)
     else:
         df_table = generate_df_from_response(response, header_present=False)
+    df_table = clean_df(df_table)
     excel_data = io.BytesIO()
     df_table.to_excel(excel_data, index=False)
     return (chunk_count, excel_data)

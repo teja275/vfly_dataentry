@@ -22,3 +22,7 @@ def generate_df_from_response(response, header_present=False):
         return df_table
     else:
         print("HTTP request failed with status code:", response.status_code)
+
+
+def correct_mediclaim_number(df_table):
+    if df_table.shape[0] ==
