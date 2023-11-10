@@ -12,10 +12,10 @@ def clean_states(df_table, state_replacements_all=None, state_replacements_col=N
 
 def clean_address(df_table, address_replacements=None):
     if address_replacements is None:
-        address_replacements = {" .": "."}
+        address_replacements = {" \.": "."}
     if df_table.shape[1] == 23:
         address_columns = [3, 12, 18]
-        df_table.iloc[:, address_columns] = df_table.iloc[:, address_columns].replace(address_replacements)
+        df_table.iloc[:, address_columns] = df_table.iloc[:, address_columns].replace(address_replacements, regex=True)
     return df_table
 
 
