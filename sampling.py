@@ -1,7 +1,7 @@
 import numpy as np
+import scipy.stats as stats
 import openpyxl
 from openpyxl.styles import PatternFill
-from scipy.stats import norm
 from itertools import product
 
 # step 1 -> construct 2 arrays. array1 would be a 2d array with cell references and array 2 would be a 2d array with
@@ -29,15 +29,16 @@ def create_sheet_cell_references(file_path):
 
 
 def sample_cells_with_probabilities(
-    cell_references, sheet_references, n, column_probabilities=None, seed=None
+    cell_references, sheet_references, n, column_probabilities=None, seed=1234
 ):
     if column_probabilities is None:
         column_probabilities = (
             np.ones(cell_references.shape[1]) / cell_references.shape[1]
         )
-
-    # Normalize probabilities in each column
-    normalized_probabilities = column_probabilities / column_probabilities.sum()
+    else:
+        column_probabilities = np.array(column_probabilities)
+        # Normalize probabilities in each column
+        normalized_probabilities = column_probabilities / column_probabilities.sum()
 
     # Generate random indices based on column-wise probabilities
     column_indices = np.random.choice(
@@ -57,14 +58,6 @@ def sample_cells_with_probabilities(
     return sampled_coordinates, sampled_cell_references, sampled_sheet_references
 
 
-def highlight_cells(worksheet, cells):
-    yellow_fill = PatternFill(
-        start_color="FFFF00", end_color="FFFF00", fill_type="solid"
-    )
-    for cell in cells:
-        worksheet[cell].fill = yellow_fill
-
-
 def highlight_cells_workbook(
     workbook, sampled_cell_references, sampled_sheet_references
 ):
@@ -77,20 +70,51 @@ def highlight_cells_workbook(
             worksheet[cell].fill = yellow_fill
 
 
-def random_cells(num_cells, num_rows, num_cols):
-    columns = [chr(col + 65) for col in range(num_cols)]  # 'A' to 'Z'
-    rows = range(2, num_rows + 1)  # 1 to 25
-    cell_references = [f"{col}{row}" for col, row in product(columns, rows)]
-    return np.random.choice(cell_references, num_cells, replace=True)
+def calculate_sample_size(observed_error_rate, confidence_level, margin_of_error):
+    z_score = np.abs(stats.norm.ppf((1 + confidence_level) / 2))
+    # Calculate sample size (n)
+    sample_size = (
+        z_score**2 * observed_error_rate * (1 - observed_error_rate)
+    ) / margin_of_error**2
 
+    # Round up to the nearest integer since the sample size must be a whole number
+    sample_size = int(np.ceil(sample_size))
 
-def calculate_sample_size(o, t, confidence):
-    z_score = norm.ppf(1 - (1 - confidence) / 2)
-    return int(np.ceil((z_score**2 * o * (1 - o)) / ((t - o) ** 2)))
+    return sample_size
 
 
 if __name__ == "__main__":
-    file_path = "/Users/bhanuteja/Downloads/qc_nov16.xlsx"
+    file_path = "/Users/bhanuteja/Downloads/qc_report_sampling.xlsx"
+    observed_error_rate = 0.03  # Replace with your observed error rate
+    confidence = 0.95  # Replace with your desired confidence interval
+    margin_of_error = 0.01
+    n = calculate_sample_size(observed_error_rate, confidence, margin_of_error)
+    print(n)
+    probabilities = [
+        0,
+        0.03,
+        0.06,
+        0.14,
+        0,
+        0,
+        0.06,
+        0.02,
+        0,
+        0,
+        0.02,
+        0.07,
+        0.08,
+        0,
+        0.02,
+        0.03,
+        0.05,
+        0,
+        0.22,
+        0.03,
+        0,
+        0,
+        0.16,
+    ]
     cell_references, sheet_references, workbook = create_sheet_cell_references(
         file_path
     )
@@ -98,19 +122,10 @@ if __name__ == "__main__":
         sampled_coordinates,
         sampled_cell_references,
         sampled_sheet_references,
-    ) = sample_cells_with_probabilities(cell_references, sheet_references, 777)
+    ) = sample_cells_with_probabilities(
+        cell_references, sheet_references, n, probabilities
+    )
     highlight_cells_workbook(
         workbook, sampled_cell_references, sampled_sheet_references
     )
     workbook.save(file_path)
-
-
-# if __name__ == "__main__":
-#     input_file = "/Users/bhanuteja/Downloads/qc_report.xlsx"
-#     output_file = "/Users/bhanuteja/Downloads/qc_report.xlsx"
-#     observed_error_rate = 0.01  # Replace with your observed error rate
-#     target_error_rate = 0.003  # Replace with your target error rate
-#     confidence = 0.95  # Replace with your desired confidence interval
-#     print(f"Sample size is {calculate_sample_size(observed_error_rate, target_error_rate, confidence)}")
-#     # print(f"{random_cells(10, 100, 10)}")
-#     # main(input_file, output_file, observed_error_rate, target_error_rate, confidence)
