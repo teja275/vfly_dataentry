@@ -61,6 +61,10 @@
             font-size: 16px;
         }
 
+        .tabcontent {
+            display: none;
+        }
+
         /* Add a CSS class to clear the float for the "Processing Option" label */
         .form-field label[for="processing_option"] {
             clear: both;
@@ -68,43 +72,86 @@
     </style>
 </head>
 <body>
-<h1>Image to Excel Converter - Data Entry Project</h1>
 
-<form method="POST" action="/" enctype="multipart/form-data">
-    <!-- Field 1: Image -->
-    <div class="form-field">
-        <label for="image">Image</label>
-        <input type="file" name="image" id="image" required>
-    </div>
+<div class="tabs">
+    <button class="tablinks" onclick="openTab(event, 'converter')">Image to Excel Converter</button>
+    <button class="tablinks" onclick="openTab(event, 'dataqc')">Data QC</button>
+</div>
 
-    <!-- Field 2: Number of Chunks -->
-    <div class="form-field">
-        <label for="num_chunks">Number of Chunks</label>
-        <input type="number" name="num_chunks" id="num_chunks" required>
-    </div>
+<!-- Image to Excel Converter Tab -->
+<div id="converter" class="tabcontent">
+    <h1>Image to Excel Converter - Data Entry Project</h1>
 
-    <!-- Field 3: Number of Records -->
-    <div class="form-field">
-        <label for="num_records">Number of Records</label>
-        <input type="number" name="num_records" id="num_records" required>
-    </div>
+    <form method="POST" action="/" enctype="multipart/form-data">
+        <!-- Field 1: Image -->
+        <div class="form-field">
+            <label for="image">Image</label>
+            <input type="file" name="image" id="image" required>
+        </div>
 
-    <!-- Field 4: Processing Option -->
-    <div class="form-field" style="display: grid">
-        <label for="processing_option">Processing Mode</label>
-        <select name="processing_option" id="processing_option">
-            <option value="Image Chunking Only">Image Chunking Only</option>
-            <option value="Image Chunking & OCR">Image Chunking & OCR</option>
-        </select>
-    </div>
+        <!-- Field 2: Number of Chunks -->
+        <div class="form-field">
+            <label for="num_chunks">Number of Chunks</label>
+            <input type="number" name="num_chunks" id="num_chunks" required>
+        </div>
 
-    <!-- Field 5: Output file name prefix -->
-    <div class="form-field">
-        <label for="file_prefix">Output file name prefix</label>
-        <input type="text" name="file_prefix" id="file_prefix" required>
-    </div>
-<br>
-    <input type="submit" value="Process and Download">
-</form>
+        <!-- Field 3: Number of Records -->
+        <div class="form-field">
+            <label for="num_records">Number of Records</label>
+            <input type="number" name="num_records" id="num_records" required>
+        </div>
+
+        <!-- Field 4: Processing Option -->
+        <div class="form-field" style="display: grid">
+            <label for="processing_option">Processing Mode</label>
+            <select name="processing_option" id="processing_option">
+                <option value="Image Chunking Only">Image Chunking Only</option>
+                <option value="Image Chunking & OCR">Image Chunking & OCR</option>
+            </select>
+        </div>
+
+        <!-- Field 5: Output file name prefix -->
+        <div class="form-field">
+            <label for="file_prefix">Output file name prefix</label>
+            <input type="text" name="file_prefix" id="file_prefix" required>
+        </div>
+        <br>
+        <input type="submit" value="Process and Download">
+    </form>
+</div>
+
+<!-- Data QC Tab -->
+<div id="dataqc" class="tabcontent">
+    <h1>Data QC</h1>
+
+    <form method="POST" action="/dataqc" enctype="multipart/form-data">
+        <!-- Field for Excel File Upload -->
+        <div class="form-field">
+            <label for="excel_file">Excel File</label>
+            <input type="file" name="excel_file" id="excel_file" required>
+        </div>
+
+        <br>
+
+        <input type="submit" value="Submit for Data QC">
+    </form>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
 </body>
 </html>
