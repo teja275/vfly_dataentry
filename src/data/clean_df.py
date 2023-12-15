@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def clean_states(df_table, state_replacements_all=None, state_replacements_col=None):
     if state_replacements_all is None:
         state_replacements_all = {"N / A": "N/A", "DK": "OK", "DH": "OH"}
@@ -32,6 +35,11 @@ def clean_mediclaim_number(df_table):
     return df_table
 
 
+def clean_dot_space(df_table):
+    df_table = df_table.replace(" \.", ".", regex=True)
+    return df_table
+
+
 def clean_df(
     df_table,
     state_replacements_all=None,
@@ -41,4 +49,12 @@ def clean_df(
     df_table = clean_states(df_table, state_replacements_all, state_replacements_col)
     df_table = clean_address(df_table, address_replacements)
     df_table = clean_mediclaim_number(df_table)
+    df_table = clean_dot_space(df_table)
     return df_table
+
+
+if __name__ == '__main__':
+    df = pd.DataFrame({'a': ['a .', 'b .', 'c .'], 'b': ['d .', 'e .', 'f .']})
+    print(df)
+    df = clean_dot_space(df)
+    print(df)
