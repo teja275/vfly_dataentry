@@ -1,11 +1,9 @@
-# application.py
+# application_attendance.py
 import subprocess
-
+import pandas as pd
 from flask import Flask, render_template, request, Response
-
-from config import OCR_API_URL, OCR_API_KEY
-from src.data.make_images import download_image_chunks
-from src.run_ocr_pipeline import get_excel_from_image
+from datetime import datetime
+from src.data.attendance import format_in_time, format_out_time, classify_attendance, create_output_excel
 
 application = Flask(__name__, template_folder="templates", static_folder="templates")
 application.config["UPLOAD_FOLDER"] = "uploads"
@@ -25,45 +23,34 @@ def webhook():
 
 
 @application.route("/", methods=["GET", "POST"])
-def upload_image():
+def upload_csv():
     if request.method == "POST":
-        image = request.files["image"]
-        num_chunks = int(request.form["num_chunks"])
-        num_records = int(request.form["num_records"])
-        output_filename_prefix = request.form["file_prefix"]
-        processing_option = request.form.get("processing_option")
-        if image:
-            if processing_option == "Image Chunking & OCR":
-                # Call your processing script here
-                zip_file = get_excel_from_image(
-                    image,
-                    num_chunks,
-                    num_records,
-                    output_filename_prefix,
-                    OCR_API_URL,
-                    OCR_API_KEY,
-                )
-                return Response(
-                    zip_file,
-                    mimetype="application/zip",
-                    headers={
-                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_excel_chunks.zip"
-                    },
-                )
-            elif processing_option == "Image Chunking Only":
-                zip_file = download_image_chunks(
-                    image, num_chunks, num_records, output_filename_prefix
-                )
-                return Response(
-                    zip_file,
-                    mimetype="application/zip",
-                    headers={
-                        "Content-Disposition": f"attachment; filename={output_filename_prefix}_image_chunks.zip"
-                    },
-                )
+        csv_file = request.files["csv_file"]
+        date_str = request.form["date"]
+        if csv_file and date_str:
+            # Convert the date string to a datetime object
+            selected_date = datetime.strptime(date_str, "%Y-%m-%d")
 
-    # Return the form for GET requests
-    return render_template("upload_form.html")
+            # Read the CSV file into a DataFrame
+            attendance_data = pd.read_csv(csv_file)
+
+            # Process the attendance data
+            attendance_data["In Time"] = attendance_data.apply(lambda row: format_in_time(row["First IN"], selected_date), axis=1)
+            attendance_data["Out Time"] = attendance_data.apply(lambda row: format_out_time(row["Last OUT"], selected_date), axis=1)
+            # attendance_data["In Time"] = attendance_data["First IN"].apply(format_in_and_out_time)
+            # attendance_data["Out Time"] = attendance_data["Last OUT"].apply(format_in_and_out_time)
+            attendance_data["Attendance"] = attendance_data.apply(lambda row: classify_attendance(row["In Time"], row["Out Time"]), axis=1)
+
+            # Create the output Excel file
+            output = create_output_excel(attendance_data)
+
+            return Response(
+                output,
+                mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                headers={"Content-Disposition": "attachment; filename=attendance_nnrg.xlsx"}
+            )
+
+    return render_template("upload_form_attendance.html")
 
 
 if __name__ == "__main__":
