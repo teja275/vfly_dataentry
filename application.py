@@ -50,7 +50,7 @@ def upload_csv():
                 headers={"Content-Disposition": "attachment; filename=attendance_nnrg.xlsx"}
             )
 
-    return render_template("upload_form_attendance.html")
+    return render_template("upload_form.html")
 
 
 if __name__ == "__main__":
