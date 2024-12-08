@@ -1,11 +1,12 @@
+<!-- templates/upload_form_attendance.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Image to Excel Converter - Data Entry Project (8th Dec 2024)</title>
+    <title>NNRG College Attendance</title>
     <style>
         body {
-            background: url('{{ url_for('static', filename='data_entry.jpeg') }}') no-repeat center center fixed;
+            background: url('{{ url_for('static', filename='nnrg.jpeg') }}') no-repeat center center fixed;
             background-size: cover;
             font-family: Arial, sans-serif;
             margin: 0;
@@ -20,8 +21,8 @@
         }
 
         form {
-            width: 80%; /* Adjust as needed */
-            max-width: 500px; /* Limit maximum width */
+            width: 80%;
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
             background: rgba(255, 255, 255, 0.8);
@@ -31,7 +32,7 @@
 
         label {
             display: block;
-            width: 50%; /* Set a consistent width for labels */
+            width: 50%;
             float: left;
             clear: both;
             margin: 10px 0;
@@ -39,10 +40,9 @@
         }
 
         input[type="file"],
-        input[type="number"],
-        input[type="text"],
-        select {
-            width: 50%; /* Set a consistent width for inputs */
+        input[type="date"],
+        input[type="submit"] {
+            width: 100%;
             padding: 10px;
             margin: 5px 0;
             border: 1px solid #ccc;
@@ -51,59 +51,26 @@
         }
 
         input[type="submit"] {
-            width: 100%;
-            padding: 10px;
             background: #007bff;
             color: #fff;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-        }
-
-        /* Add a CSS class to clear the float for the "Processing Option" label */
-        .form-field label[for="processing_option"] {
-            clear: both;
         }
     </style>
 </head>
 <body>
-<h1>Image to Excel Converter - Data Entry Project (8th Dec 2024) </h1>
+<h1>NNRG College Attendance</h1>
 
 <form method="POST" action="/" enctype="multipart/form-data">
-    <!-- Field 1: Image -->
     <div class="form-field">
-        <label for="image">Image</label>
-        <input type="file" name="image" id="image" required>
+        <label for="csv_file">Upload Attendance File</label>
+        <input type="file" name="csv_file" id="csv_file" required>
     </div>
-
-    <!-- Field 2: Number of Chunks -->
     <div class="form-field">
-        <label for="num_chunks">Number of Chunks</label>
-        <input type="number" name="num_chunks" id="num_chunks" required>
+        <label for="date">Select Attendance Date</label>
+        <input type="date" name="date" id="date" required>
     </div>
-
-    <!-- Field 3: Number of Records -->
-    <div class="form-field">
-        <label for="num_records">Number of Records</label>
-        <input type="number" name="num_records" id="num_records" required>
-    </div>
-
-    <!-- Field 4: Processing Option -->
-    <div class="form-field" style="display: grid">
-        <label for="processing_option">Processing Mode</label>
-        <select name="processing_option" id="processing_option">
-            <option value="Image Chunking Only">Image Chunking Only</option>
-            <option value="Image Chunking & OCR">Image Chunking & OCR</option>
-        </select>
-    </div>
-
-    <!-- Field 5: Output file name prefix -->
-    <div class="form-field">
-        <label for="file_prefix">Output file name prefix</label>
-        <input type="text" name="file_prefix" id="file_prefix" required>
-    </div>
-<br>
     <input type="submit" value="Process and Download">
 </form>
 </body>
